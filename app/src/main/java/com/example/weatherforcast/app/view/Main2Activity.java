@@ -5,26 +5,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.weatherforcast.R;
 import com.example.weatherforcast.app.adapter.DayAdapter;
-import com.example.weatherforcast.app.adapter.DayCallBack;
+import com.example.weatherforcast.app.adapter.OnDayClickListener;
 import com.example.weatherforcast.data.model.week.Forecastday;
 import com.example.weatherforcast.data.model.week.ResponseWeather;
 import com.example.weatherforcast.data.rest.RestCallBack;
 import com.example.weatherforcast.data.rest.WeatherApi;
 import com.example.weatherforcast.data.rest.WeatherFullApi;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
 
-public class Main2Activity extends AppCompatActivity implements DayCallBack {
+public class Main2Activity extends AppCompatActivity implements OnDayClickListener {
     private TextView tvThanhPho, tvNhietDo, tvNhietDoMax,
             tvNhietDoMin, tvNgay,tvGioMax, tvGioMin, tvMtMoc,tvMtLan,tvTime;
     private RecyclerView listDay;
@@ -96,7 +98,7 @@ public class Main2Activity extends AppCompatActivity implements DayCallBack {
         tvNgay.setText(fomatDate(time[0]));
         tvNhietDoMax.setText("Nhiệt độ max: \n"+responseWeather.getForecast().getForecastday().get(0).getDay().getMaxtempC()+" °C");
         tvNhietDoMin.setText("Nhiệt độ min: \n"+responseWeather.getForecast().getForecastday().get(0).getDay().getMintempC()+" °C");
-        tvGioMin.setText("Sức gió: \n"+responseWeather.getForecast().getForecastday().get(0).getDay().getMaxwindMph()+"m/s");
+        tvGioMin.setText("Sức gió: \n"+responseWeather.getForecast().getForecastday().get(0).getDay().getAvgvisKm()+"km/h");
         tvGioMax.setText("Độ ẩm: \n"+responseWeather.getForecast().getForecastday().get(0).getDay().getAvghumidity()+"%");
         tvMtMoc.setText("Mặt trời mọc: \n"+responseWeather.getForecast().getForecastday().get(0).getAstro().getSunrise());
         tvMtLan.setText("Mặt trời lặn: \n"+responseWeather.getForecast().getForecastday().get(0).getAstro().getSunset());
@@ -111,22 +113,27 @@ public class Main2Activity extends AppCompatActivity implements DayCallBack {
         Forecastday forecastday = forecastdays.get(position);
 
         Glide.with(this).load("http:"+forecastday.getDay().getCondition().getIcon()).into(imgTT);
-        tvNhietDo.setText(forecastday.getDay().getAvgtempC()+"");
+        tvNhietDo.setText(forecastday.getDay().getAvgtempC()+" °C");
         tvNgay.setText(fomatDate(forecastday.getDate().trim()));
-        tvNhietDoMax.setText("Nhiệt độ max: \n"+forecastday.getDay().getMaxtempC()+" C");
-        tvNhietDoMin.setText("Nhiệt độ min: \n"+forecastday.getDay().getMintempC()+" C");
-        tvGioMin.setText("Sức gió: \n"+forecastday.getDay().getMaxwindMph()+"m/s");
+        tvNhietDoMax.setText("Nhiệt độ max: \n"+forecastday.getDay().getMaxtempC()+" °C");
+        tvNhietDoMin.setText("Nhiệt độ min: \n"+forecastday.getDay().getMintempC()+" °C");
+        tvGioMin.setText("Sức gió: \n"+forecastday.getDay().getAvgvisKm()+"km/h");
         tvGioMax.setText("Độ ẩm: \n"+forecastday.getDay().getAvghumidity()+"%");
         tvMtMoc.setText("Mặt trời mọc: \n"+forecastday.getAstro().getSunrise());
         tvMtLan.setText("Mặt trời lặn: \n"+forecastday.getAstro().getSunset());
     }
     public static String fomatDate(String date){
-        String dateFormat = "";
-        String [] tam = date.split("-");
-        for (int i = tam.length-1; i>=0 ; i--) {
-            dateFormat+=tam[i]+"-";
+        String newDate="";
+        Date date1= new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("dd-MM-yyyy");
+        try {
+            date1= simpleDateFormat.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-        dateFormat = dateFormat.substring(0,dateFormat.length()-1);
-        return dateFormat;
+        newDate =simpleDateFormat1.format(date1);
+        return newDate;
+
     }
 }
