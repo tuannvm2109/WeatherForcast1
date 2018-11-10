@@ -14,13 +14,16 @@ import com.bumptech.glide.Glide;
 import com.example.weatherforcast.R;
 import com.example.weatherforcast.data.model.week.Forecastday;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class DayAdapter extends RecyclerView.Adapter<DayAdapter.ViewHolder> {
     private List<Forecastday> forecastdays;
     private LayoutInflater inflater;
     private Context context;
-    private DayCallBack callBack;
+    private OnDayClickListener callBack;
     private LinearLayout linearLayout;
 
     public DayAdapter(List<Forecastday> forecastdays, Context context) {
@@ -29,7 +32,7 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.ViewHolder> {
         inflater =LayoutInflater.from(context);
     }
 
-    public void setCallBack(DayCallBack callBack) {
+    public void setCallBack(OnDayClickListener callBack) {
         this.callBack = callBack;
     }
 
@@ -57,6 +60,7 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
+        if(forecastdays == null) return 0;
         return forecastdays.size();
     }
 
@@ -79,12 +83,16 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.ViewHolder> {
         }
     }
     public static String fomatDate(String date){
-        String dateFormat = "";
-        String [] tam = date.split("-");
-        for (int i = tam.length-1; i>=0 ; i--) {
-            dateFormat+=tam[i]+"-";
+        String newDate="";
+        Date date1= new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("dd-MM-yyyy");
+        try {
+            date1= simpleDateFormat.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-        dateFormat = dateFormat.substring(0,dateFormat.length()-1);
-        return dateFormat;
+        newDate =simpleDateFormat1.format(date1);
+        return newDate;
     }
 }

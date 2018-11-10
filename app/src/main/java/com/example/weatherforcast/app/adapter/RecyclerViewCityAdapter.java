@@ -67,6 +67,7 @@ public class RecyclerViewCityAdapter extends RecyclerView.Adapter<RecyclerViewCi
 
     @Override
     public int getItemCount() {
+        if(cityList == null) return 0;
         return cityList.size();
     }
 
